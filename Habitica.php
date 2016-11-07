@@ -26,11 +26,6 @@ class Habitica
         return $this->curl($this->endpoint . 'user');
     }
 
-    public function getData($result, $header_length)
-    {
-        return substr($result, $header_length);
-    }
-
     public function curl($url)
     {
         $curl = curl_init();
