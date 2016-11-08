@@ -39,11 +39,30 @@ class Habitica
         $options = $this->getOptions($method, $arguments);
         $url = $this->endpoint . $resource;
 
-        // use curl
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $this->headers);
+
+        switch ($method) {
+            case 'post':
+                curl_setopt($curl, CURLOPT_POST, true);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $options['query']);
+                break;
+            case 'get':
+                curl_setopt($curl, CURLOPT_URL, $url);
+                break;
+            case 'delete':
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
+                break;
+            case 'patch':
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PATCH');
+                break;
+            case 'put':
+                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'PUT');
+                break;
+        }
+
         $result = curl_exec($curl);
         curl_close($curl);
 
@@ -56,7 +75,8 @@ class Habitica
             return $this->options;
         }
 
-        if ($method == 'get') {
+        if ($method == 'get' || $method === 'post') {
+            $arguments = http_build_query($arguments, '', '&');
             $this->options['query'] = $arguments;
         } else {
             $this->options['json'] = $arguments;
