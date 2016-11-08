@@ -1,0 +1,13 @@
+{
+    "name": "altelma/habitica-api-v3",
+    "description": "PHP class provide you to access infomation from your client habitica with API V3.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "altelma",
+            "email": "nrohtgnohp@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
