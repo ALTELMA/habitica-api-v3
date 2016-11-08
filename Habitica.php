@@ -2,6 +2,9 @@
 
 /**
  * Habitica
+ * PHP class provide you access to habitica api get or add data to habitica client
+ * @api version 3.0
+ *
  */
 
 class Habitica
@@ -10,6 +13,7 @@ class Habitica
     private $token;
     private $endpoint = 'https://habitica.com/api/v3/';
     private $headers;
+    private $allowedMethods = ['get', 'head', 'put', 'post', 'patch', 'delete'];
 
     public function __construct($uid, $token)
     {
@@ -21,13 +25,21 @@ class Habitica
         ];
     }
 
-    public function getUser()
+    public function request($resource, $arguments = [], $method = 'GET')
     {
-        return $this->curl($this->endpoint . 'user');
+        if (!$this->uid && !$this->token) {
+            return 'Please provide an API key.';
+        }
+
+        return $this->makeRequest($resource, $arguments, strtolower($method));
     }
 
-    public function curl($url)
+    public function makeRequest($resource, $arguments, $method)
     {
+        $options = $this->getOptions($method, $arguments);
+        $url = $this->endpoint . $resource;
+
+        // use curl
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -36,5 +48,35 @@ class Habitica
         curl_close($curl);
 
         return $result;
+    }
+
+    private function getOptions($method, $arguments)
+    {
+        if (count($arguments) < 1) {
+            return $this->options;
+        }
+
+        if ($method == 'get') {
+            $this->options['query'] = $arguments;
+        } else {
+            $this->options['json'] = $arguments;
+        }
+
+        return $this->options;
+    }
+
+    public function __call($method, $arguments)
+    {
+        if (count($arguments) < 1) {
+            return 'Magic request methods require a URI and optional options array';
+        }
+
+        if (! in_array($method, $this->allowedMethods)) {
+            return 'Method "' . $method . '" is not supported.';
+        }
+
+        $resource = $arguments[0];
+        $options = isset($arguments[1]) ? $arguments[1] : [];
+        return $this->request($resource, $options, $method);
     }
 }
