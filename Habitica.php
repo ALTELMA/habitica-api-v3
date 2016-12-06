@@ -2,11 +2,10 @@
 
 /**
  * Habitica
- * PHP class provide you access to habitica api get or add data to habitica client
- * @api version 3.0
+ * PHP class provide you access to habitica api get or add data to habitica client.
  *
+ * @api version 3.0
  */
-
 class Habitica
 {
     private $uid;
@@ -20,8 +19,8 @@ class Habitica
         $this->uid = $uid;
         $this->token = $token;
         $this->headers = [
-            "x-api-user:". $this->uid,
-            "x-api-key:". $this->token
+            'x-api-user:'.$this->uid,
+            'x-api-key:'.$this->token,
         ];
     }
 
@@ -37,7 +36,7 @@ class Habitica
     public function makeRequest($resource, $arguments, $method)
     {
         $options = $this->getOptions($method, $arguments);
-        $url = $this->endpoint . $resource;
+        $url = $this->endpoint.$resource;
 
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
@@ -91,12 +90,13 @@ class Habitica
             return 'Magic request methods require a URI and optional options array';
         }
 
-        if (! in_array($method, $this->allowedMethods)) {
-            return 'Method "' . $method . '" is not supported.';
+        if (!in_array($method, $this->allowedMethods)) {
+            return 'Method "'.$method.'" is not supported.';
         }
 
         $resource = $arguments[0];
         $options = isset($arguments[1]) ? $arguments[1] : [];
+
         return $this->request($resource, $options, $method);
     }
 }
